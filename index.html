@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You are my Best Friend!</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    /* Reset & Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      background: #0d0614;
+      background: radial-gradient(circle at center, #24092b 0%, #09020d 100%);
+      color: #ffffff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    /* Common Card / Screen Styling */
+    .screen {
+      display: none;
+      animation: fadeIn 0.6s ease-in-out forwards;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cute SVG Sticker/Icon Styling */
+    .sticker {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 20px;
+      border-radius: 50%;
+      background: rgba(255, 105, 180, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 25px rgba(236, 72, 153, 0.3);
+    }
+
+    .sticker svg {
+      width: 80px;
+      height: 80px;
+    }
+
+    h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.8rem;
+      color: #ff85c0;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px rgba(255, 133, 192, 0.5);
+    }
+
+    p.subtitle {
+      font-size: 1.05rem;
+      color: #d8b4fe;
+      margin-bottom: 25px;
+    }
+
+    /* Buttons */
+    .btn {
+      background: linear-gradient(135deg, #ec4899, #d946ef);
+      color: #fff;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(236, 72, 153, 0.6);
+    }
+
+    /* Progress Bar (Bestie Bond Meter) */
+    .progress-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 25px;
+      margin: 20px 0;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 16px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 15px 0;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ec4899, #f43f5e);
+      border-radius: 10px;
+      transition: width 0.1s linear;
+    }
+
+    .percentage {
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: #ff85c0;
+    }
+
+    .warning-badge {
+      display: none;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-top: 10px;
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { opacity: 0.7; }
+      to { opacity: 1; }
+    }
+
+    /* Reveal Compliments List */
+    .list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .card-item {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 14px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: #ff85c0;
+      font-size: 1.1rem;
+    }
+
+    .card-item.revealed {
+      background: rgba(236, 72, 153, 0.2);
+      border-color: #ec4899;
+      color: #ffffff;
+      font-size: 0.95rem;
+    }
+
+    /* Note Section */
+    .note-card {
+      background: #fbcfe8;
+      color: #831843;
+      padding: 25px;
+      border-radius: 16px;
+      text-align: left;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      box-shadow: 0 10px 25px rgba(251, 207, 232, 0.2);
+      position: relative;
+    }
+
+    .note-card::before {
+      content: "♥";
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 1.5rem;
+      color: #ec4899;
+    }
+
+    /* Photo Gallery (Memories Section) */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .photo-card {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid rgba(236, 72, 153, 0.4);
+      background: rgba(255, 255, 255, 0.05);
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .photo-card:active {
+      transform: scale(0.95);
+    }
+
+    .photo-card img, .photo-card video {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-card span {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.6);
+      font-size: 0.75rem;
+      padding: 4px;
+      color: #fff;
+    }
+
+    /* Friendship Day Special Wishes */
+    .wish-box {
+      background: rgba(255, 255, 255, 0.08);
+      border: 2px dashed #ec4899;
+      border-radius: 20px;
+      padding: 25px 15px;
+      margin-top: 15px;
+      box-shadow: 0 0 30px rgba(236, 72, 153, 0.3);
+      animation: zoomIn 0.8s ease-in-out;
+    }
+
+    .wish-box h2 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.5rem;
+      color: #f43f5e;
+      margin-bottom: 10px;
+      text-shadow: 0 0 15px rgba(244, 63, 94, 0.6);
+    }
+
+    @keyframes zoomIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    /* FULLSCREEN PHOTO/VIDEO LIGHTBOX MODAL */
+    .lightbox {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(8px);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .lightbox-content {
+      max-width: 90%;
+      max-height: 80%;
+      border-radius: 15px;
+      box-shadow: 0 0 25px rgba(236, 72, 153, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+      font-size: 2rem;
+      color: #fff;
+      cursor: pointer;
+      background: rgba(255, 255, 255, 0.2);
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BACKGROUND MUSIC AUDIO (Yahan apni audio file ka naam/link dalein) -->
+  <audio id="bgMusic" src="b.mp3" loop></audio>
+
+  <div class="container">
+
+    <!-- Screen 1: Welcome Bestie -->
+    <div id="screen1" class="screen active">
+      <div class="sticker">
+        <!-- SVG Bear Sticker -->
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="55" r="30" fill="#f472b6"/>
+          <circle cx="30" cy="30" r="12" fill="#f472b6"/>
+          <circle cx="70" cy="30" r="12" fill="#f472b6"/>
+          <circle cx="30" cy="30" r="6" fill="#fbcfe8"/>
+          <circle cx="70" cy="30" r="6" fill="#fbcfe8"/>
+          <ellipse cx="50" cy="60" rx="12" ry="8" fill="#fff"/>
+          <ellipse cx="50" cy="57" rx="4" ry="3" fill="#475569"/>
+          <circle cx="42" cy="48" r="3" fill="#475569"/>
+          <circle cx="58" cy="48" r="3" fill="#475569"/>
+        </svg>
+      </div>
+      <h1>Hey Bestie!</h1>
+      <p class="subtitle">Do you even know how lucky I am to have you?</p>
+      <button class="btn" onclick="startExperience()">Open My Heart ♥</button>
+    </div>
+
+    <!-- Screen 2: Bond Level Meter -->
+    <div id="screen2" class="screen">
+      <div class="progress-box">
+        <p style="color: #d8b4fe;">Measuring our Bestie Bond...</p>
+        <div class="percentage" id="percentText">0%</div>
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progressFill"></div>
+        </div>
+        <p id="statusText" style="font-size: 0.85rem; color: #a855f7;">Calculating madness & fun...</p>
+        <div id="warningBadge" class="warning-badge">⚠ WARNING: TOO CRAZY TO HANDLE</div>
+      </div>
+      <button id="nextToCompliments" class="btn" style="display: none;" onclick="showCompliments()">Continue ✨</button>
+    </div>
+
+    <!-- Screen 3: Interactive Compliments for Best Friend -->
+    <div id="screen3" class="screen">
+      <h1 style="font-size: 2.2rem;">Just for my Bestie</h1>
+      <p class="subtitle" style="font-size: 0.85rem;">Tap each one to reveal</p>
+      
+      <div class="list-container">
+        <div class="card-item" onclick="revealCard(this, 'You are my Partner in Crime 🕵️‍♂️')">♥</div>
+        <div class="card-item" onclick="revealCard(this, 'You always make me laugh till my stomach hurts 😂')">♥</div>
+        <div class="card-item" onclick="revealCard(this, 'You know all my secrets & still stay 🤫')">♥</div>
+        <div class="card-item" onclick="revealCard(this, 'Life is 100x better with you 🚀')">♥</div>
+        <div class="card-item" onclick="revealCard(this, 'You are literally the best friend ever 👑')">♥</div>
+      </div>
+
+      <button class="btn" onclick="showNote()">See more →</button>
+    </div>
+
+    <!-- Screen 4: Best Friend Note -->
+    <div id="screen4" class="screen">
+      <h1>A note for my Best Friend</h1>
+      <div class="note-card">
+        <p>I just wanted to tell you how grateful I am to have a best friend like you.</p><br>
+        <p>From random late-night chats to stupid jokes that only we understand, you've always been there. No matter how crazy life gets, I know I can count on you.</p><br>
+        <p>Thanks for being genuine, hilarious, and always having my back. You truly mean the world to me, buddy!</p>
+      </div>
+      <button class="btn" onclick="showMemories()">Our Memories →</button>
+    </div>
+
+    <!-- Screen 5: Memories Photo & Video Gallery -->
+    <div id="screen5" class="screen">
+      <h1>Bestie Memories</h1>
+      <p class="subtitle">Tap any photo to view full screen ✨</p>
+      
+      <div class="gallery-grid">
+        <!-- Photo 1 -->
+        <div class="photo-card" onclick="openLightbox(this)">
+          <img src="6.jpeg" alt="Memory 1">
+          <span>Memories #1</span>
+        </div>
+        
+        <!-- Photo 2 -->
+        <div class="photo-card" onclick="openLightbox(this)">
+          <img src="8.jpeg" alt="Memory 2">
+          <span>Memories #2</span>
+        </div>
+
+        <!-- Photo 3 -->
+        <div class="photo-card" onclick="openLightbox(this)">
+          <video src="9.mp4" autoplay loop muted playsinline></video>
+          <span>Best Video 🎥</video></span>
+        </div>
+
+        <!-- Video 1 -->
+        <div class="photo-card" onclick="openLightbox(this)">
+          <video src="10.mp4" autoplay loop muted playsinline></video>
+          <span>Best Video 🎥</span>
+        </div>
+      </div>
+
+      <button class="btn" onclick="showFinal()">Best Friends Forever ♥</button>
+    </div>
+
+    <!-- Screen 6: Final Screen with Friendship Day Wish -->
+    <div id="screen6" class="screen">
+      <div class="sticker">
+        <svg viewBox="0 0 100 100">
+          <path d="M10,30 A20,20 0,0,1 50,30 A20,20 0,0,1 90,30 Q90,60 50,90 Q10,60 10,30 Z" fill="#ec4899"/>
+        </svg>
+      </div>
+      <h1>You'll always be my Best Friend!</h1>
+      
+      <!-- Special Friendship Day Wishes -->
+      <div class="wish-box">
+        <h2>Happy Friendship Day! 🤝✨</h2>
+        <p style="color: #fbcfe8; font-size: 0.95rem; margin-top: 5px;">
+          Thank you for making my life brighter, happier, and full of crazy laughter! Forever & Always! ❤️🎉
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FULLSCREEN LIGHTBOX POPUP -->
+  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close">&times;</span>
+    <div id="lightboxContainer"></div>
+  </div>
+
+  <script>
+    // Navigation Control
+    function navigateTo(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    // Start Experience & Play Background Music
+    function startExperience() {
+      const music = document.getElementById('bgMusic');
+      music.play().catch(error => {
+        console.log("Audio autoplay blocked by browser policy, waiting for interaction.");
+      });
+      startBondMeter();
+    }
+
+    // Bond Meter Logic
+    function startBondMeter() {
+      navigateTo('screen2');
+      let percent = 0;
+      const fill = document.getElementById('progressFill');
+      const text = document.getElementById('percentText');
+      const warning = document.getElementById('warningBadge');
+      const nextBtn = document.getElementById('nextToCompliments');
+
+      const interval = setInterval(() => {
+        percent += 2;
+        if (percent > 120) {
+          percent = 120;
+          clearInterval(interval);
+          warning.style.display = 'block';
+          nextBtn.style.display = 'inline-flex';
+        }
+        fill.style.width = Math.min(percent, 100) + '%';
+        text.innerText = percent + '%';
+      }, 40);
+    }
+
+    // Compliment Boxes Flip Logic
+    function revealCard(element, text) {
+      element.innerText = text;
+      element.classList.add('revealed');
+    }
+
+    function showCompliments() { navigateTo('screen3'); }
+    function showNote() { navigateTo('screen4'); }
+    function showMemories() { navigateTo('screen5'); }
+    function showFinal() { navigateTo('screen6'); }
+
+    // FULLSCREEN LIGHTBOX LOGIC WITH MUSIC PAUSE
+    function openLightbox(card) {
+      const lightbox = document.getElementById('lightbox');
+      const container = document.getElementById('lightboxContainer');
+      const music = document.getElementById('bgMusic');
+      container.innerHTML = ''; // clear previous content
+
+      const img = card.querySelector('img');
+      const video = card.querySelector('video');
+
+      if (img) {
+        const newImg = document.createElement('img');
+        newImg.src = img.src;
+        newImg.className = 'lightbox-content';
+        container.appendChild(newImg);
+      } else if (video) {
+        // Agar video click hui hai, toh background song ko pause kar do
+        if (!music.paused) {
+          music.pause();
+          window.wasMusicPlaying = true; // Track karein ki song chal raha tha ya nahi
+        }
+
+        const newVideo = document.createElement('video');
+        newVideo.src = video.src;
+        newVideo.controls = true;
+        newVideo.autoplay = true;
+        newVideo.className = 'lightbox-content';
+        container.appendChild(newVideo);
+      }
+
+      lightbox.classList.add('active');
+    }
+
+    function closeLightbox() {
+      const lightbox = document.getElementById('lightbox');
+      const container = document.getElementById('lightboxContainer');
+      const music = document.getElementById('bgMusic');
+      
+      lightbox.classList.remove('active');
+      container.innerHTML = ''; // Stop video playback when closed
+
+      // Agar pehle background song chal raha tha, toh video band hone par use wapas play kar do
+      if (window.wasMusicPlaying) {
+        music.play();
+        window.wasMusicPlaying = false;
+      }
+    }
+  </script>
+</body>
+</html>
